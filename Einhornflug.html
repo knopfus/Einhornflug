@@ -1,6 +1,5 @@
 <html>
 
-    <h1 id="gameover">Gameover</h1>
     <h1>Punkte: <span id="punkte">0</span></h1>
 
     <img id="einhorn" src="Einhorn.png"></img>
@@ -12,6 +11,10 @@
     <img id="wolke4" src="Wolke.png"></img>
     <img id="wolke5" src="Wolke.png"></img>
 
+    <div id="gameover">
+        <h1>Gameover</h1>
+        <button id="neustart">Neustart</button>
+    </div>
 
 
 <style type="text/css">
@@ -210,6 +213,7 @@ window.onkeyup = function(event) {
     }
 };
 
+document.getElementById("neustart").onclick = function() { location.reload(); };
 
 
 // Die ganze Musik spielt sich hier ab:
