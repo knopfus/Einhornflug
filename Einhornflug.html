@@ -1,0 +1,293 @@
+<html>
+
+    <h1 id="gameover">Gameover</h1>
+    <h1>Punkte: <span id="punkte">0</span></h1>
+
+    <img id="einhorn" src="Einhorn.png"></img>
+
+
+    <img id="wolke1" src="Wolke.png"></img>
+    <img id="wolke2" src="Wolke.png"></img>
+    <img id="wolke3" src="Wolke.png"></img>
+    <img id="wolke4" src="Wolke.png"></img>
+    <img id="wolke5" src="Wolke.png"></img>
+
+
+
+<style type="text/css">
+
+    #gameover { position: fixed; top: 40%; left: 40%; visibility: hidden; }
+
+    img { position: fixed; }
+
+    #einhorn { top: 200px; left: 300px; }
+
+    .runter { transform: rotate(10deg); }
+    .rauf { transform: rotate(-10deg); }
+
+    #wolke1 { top: 400px; left: 600px; }
+    #wolke2 { top: 100px; left: 150px; }
+    #wolke3 { top: 170px; left: 250px; }
+    #wolke4 { top: 220px; left: 450px; }
+    #wolke5 { top: 300px; left: 400px; }
+
+</style>
+
+
+
+<script>
+
+
+
+
+function platziereBild(id, oben, links) {
+    document.getElementById(id).style.top = oben + "px";
+    document.getElementById(id).style.left = links + "px";
+}
+
+function rotiereBild(id, nachOben, nachUnten) {
+    if (!nachOben) { document.getElementById(id).classList.remove("rauf"); }
+    if (!nachUnten) { document.getElementById(id).classList.remove("runter"); }
+    if (nachOben) { document.getElementById(id).classList.add("rauf"); }
+    if (nachUnten) { document.getElementById(id).classList.add("runter"); }
+}
+
+function stelleSpielstandDar() {
+    platziereBild("einhorn", Spielstand.einhorn.oben, Spielstand.einhorn.links);
+    rotiereBild("einhorn", Steuerung.nachOben, Steuerung.nachUnten);
+
+    platziereBild("wolke1", Spielstand.wolke1.oben, Spielstand.wolke1.links);
+    platziereBild("wolke2", Spielstand.wolke2.oben, Spielstand.wolke2.links);
+    platziereBild("wolke3", Spielstand.wolke3.oben, Spielstand.wolke3.links);
+    platziereBild("wolke4", Spielstand.wolke4.oben, Spielstand.wolke4.links);
+    platziereBild("wolke5", Spielstand.wolke5.oben, Spielstand.wolke5.links);
+
+    document.getElementById("punkte").innerText = Spielstand.punkte;
+}
+
+
+function verschiebeNachLinks(id, anzahlPixel) {
+    Spielstand[id].links -= anzahlPixel;
+}
+
+function istLinksVerschwunden(id) {
+    return Spielstand[id].links < -200;
+}
+
+function sindÜbereinander(id1, id2) {
+     var einhorn = Spielstand[id1], wolke = Spielstand[id2];
+
+     if ( wolke.links < einhorn.links ) { return false; }
+     if ( wolke.links + wolke.breite > einhorn.links + einhorn.breite ) { return false; }
+     
+     if ( wolke.oben < einhorn.oben ) { return false; }
+     if ( wolke.oben + wolke.höhe > einhorn.oben + einhorn.höhe ) { return false; }
+
+     return true;
+}
+
+function platziereRechts(id) {
+    var rechterRand = window.innerWidth,
+        untererRand = window.innerHeight;
+
+    Spielstand[id].links = rechterRand + 100;
+
+    console.log(untererRand);
+    var neueHöhe = Math.random() * untererRand;
+    console.log(neueHöhe);
+    Spielstand[id].oben = neueHöhe;
+}
+
+
+
+
+
+var Spielstand = {
+    punkte: 0,
+
+    einhorn: { oben: 200, links: 300, breite: 126, höhe: 126, geschwindigkeit: 0 },
+
+    wolke1: { oben: 400, links: 600, breite: 74, höhe: 52 },
+    wolke2: { oben: 100, links: 150, breite: 74, höhe: 52 },
+    wolke3: { oben: 170, links: 250, breite: 74, höhe: 52 },
+    wolke4: { oben: 220, links: 450, breite: 74, höhe: 52 },
+    wolke5: { oben: 300, links: 400, breite: 74, höhe: 52 }
+};
+
+var Steuerung = {
+    nachOben: false,
+    nachUnten: false,
+    nachLinks: false,
+    nachRechts: false
+};
+
+stelleSpielstandDar();
+
+
+
+
+
+function pfeilNachObenWurdeGedrückt() {
+    Steuerung.nachOben = true;
+}
+
+function pfeilNachUntenWurdeGedrückt() {
+    Steuerung.nachUnten = true;
+}
+
+function pfeilNachLinksWurdeGedrückt() {
+    //Steuerung.nachLinks = true;
+}
+
+function pfeilNachRechtsWurdeGedrückt() {
+    //Steuerung.nachRechts = true;
+}
+
+function pfeilNachObenWurdeLosgelassen() {
+    Steuerung.nachOben = false;
+}
+
+function pfeilNachUntenWurdeLosgelassen() {
+    Steuerung.nachUnten = false;
+}
+
+function pfeilNachLinksWurdeLosgelassen() {
+    Steuerung.nachLinks = false;
+}
+
+function pfeilNachRechtsWurdeLosgelassen() {
+    Steuerung.nachRechts = false;
+}
+
+
+function sammleWolkeFallsÜbereinander(id) {
+    if ( sindÜbereinander("einhorn", id) ) {
+        spieleTon("kling");
+        platziereRechts(id);
+        Spielstand.punkte += 1;
+
+        if (Spielstand.einhorn.links < 200 && Spielstand.einhorn.geschwindigkeit < 0) {
+            Spielstand.einhorn.geschwindigkeit = Math.min(Spielstand.einhorn.geschwindigkeit + 0.7, 0.5);
+        } else if (Spielstand.einhorn.links > window.innerWidth - 200 && Spielstand.einhorn.geschwindigkeit > 0) {
+        } else {
+            Spielstand.einhorn.geschwindigkeit = Math.min(Spielstand.einhorn.geschwindigkeit + 0.3, 0.5);
+        }
+    }
+}
+
+
+
+
+function spieleTon(welcherTon) {
+    var tonDatei;
+
+    if (welcherTon = "kling") {
+        tonDatei = "321287__goldendiaphragm__glass-cling-05.wav";
+    }
+
+    new Audio(tonDatei).play();
+}
+
+function gameover() {
+    document.getElementById("gameover").style.visibility = "visible";
+}
+
+window.onkeydown = function(event) {
+    switch (event.code) {
+        case "ArrowUp": pfeilNachObenWurdeGedrückt(); break;
+        case "ArrowDown": pfeilNachUntenWurdeGedrückt(); break;
+        case "ArrowLeft": pfeilNachLinksWurdeGedrückt(); break;
+        case "ArrowRight": pfeilNachRechtsWurdeGedrückt(); break;
+    }
+};
+
+window.onkeyup = function(event) {
+    switch (event.code) {
+        case "ArrowUp": pfeilNachObenWurdeLosgelassen(); break;
+        case "ArrowDown": pfeilNachUntenWurdeLosgelassen(); break;
+        case "ArrowLeft": pfeilNachLinksWurdeLosgelassen(); break;
+        case "ArrowRight": pfeilNachRechtsWurdeLosgelassen(); break;
+    }
+};
+
+
+
+// Die ganze Musik spielt sich hier ab:
+
+
+(function wiederhole() { window.setTimeout(function() {
+
+        if ( Steuerung.nachOben ) {
+             Spielstand.einhorn.oben -= 5;
+        }
+
+        if ( Steuerung.nachUnten ) {
+             Spielstand.einhorn.oben += 5;
+        }
+
+        if ( Steuerung.nachLinks ) {
+             Spielstand.einhorn.links -= 5;
+        }
+
+        if ( Steuerung.nachRechts ) {
+             Spielstand.einhorn.links += 5;
+        }
+
+        Spielstand.einhorn.geschwindigkeit = Math.max(Spielstand.einhorn.geschwindigkeit - 0.0015, -0.5);
+        Spielstand.einhorn.links += Spielstand.einhorn.geschwindigkeit;
+
+        verschiebeNachLinks("wolke1", 1);
+        verschiebeNachLinks("wolke2", 2);
+        verschiebeNachLinks("wolke3", 3);
+        verschiebeNachLinks("wolke4", 4);
+        verschiebeNachLinks("wolke5", 5);
+
+        
+        if ( istLinksVerschwunden("wolke1") ) {
+            platziereRechts("wolke1");
+        }
+
+        sammleWolkeFallsÜbereinander("wolke1");
+        
+        if ( istLinksVerschwunden("wolke2") ) {
+            platziereRechts("wolke2");
+        }
+ 
+        sammleWolkeFallsÜbereinander("wolke2");
+        
+        if ( istLinksVerschwunden("wolke3") ) {
+            platziereRechts("wolke3");
+        }
+ 
+        sammleWolkeFallsÜbereinander("wolke3");
+        
+        if ( istLinksVerschwunden("wolke4") ) {
+            platziereRechts("wolke4");
+        }
+     
+        sammleWolkeFallsÜbereinander("wolke4");
+    
+        if ( istLinksVerschwunden("wolke5") ) {
+            platziereRechts("wolke5");
+        }
+
+        sammleWolkeFallsÜbereinander("wolke5");
+ 
+
+        stelleSpielstandDar();
+
+
+        if (istLinksVerschwunden("einhorn")) {
+            gameover();
+        } else {
+            wiederhole();
+        }
+
+
+}, 10); })();
+
+
+</script>
+
+
+</html>
