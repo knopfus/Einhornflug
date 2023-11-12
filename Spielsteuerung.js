@@ -80,10 +80,7 @@ document.getElementById("neustart").onclick = function() { location.reload(); };
     Spielstand.einhorn.links += Spielstand.einhorn.geschwindigkeit;
 
     spiel.aktualisiereWolken();
-
-
-    stelleSpielstandDar();
-
+    spiel.darstellen();
 
     if (istEinhornLinksVerschwunden()) {
         gameover();
