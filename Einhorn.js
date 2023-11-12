@@ -2,6 +2,12 @@ function istEinhornLinksVerschwunden() {
     return Spielstand["einhorn"].links < -200;
 }
 
+function istEinhornRechtsVerschwunden() {
+    var rechterRand = window.innerWidth;
+
+    return Spielstand["einhorn"].links > rechterRand - 200;
+}
+
 function rotiereBild(id, nachOben, nachUnten) {
     if (!nachOben) { document.getElementById(id).classList.remove("rauf"); }
     if (!nachUnten) { document.getElementById(id).classList.remove("runter"); }
