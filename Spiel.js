@@ -11,9 +11,34 @@ var Spielstand = {
     wolke5: { oben: 300, links: 400, breite: 74, höhe: 52 }
 };
 
-function sindÜbereinander(id1, id2) {
-    var einhorn = Spielstand[id1], wolke = Spielstand[id2];
+class Spiel {
+    aufbauen() {
+        this.wolken = [];
+        for (let i = 1; i <= 5; i++) {
+            let id = "wolke" + i;
+            let wolke = new Wolke(Spielstand[id].links, Spielstand[id].oben, Spielstand[id].breite, Spielstand[id].höhe, i, id);
+            this.wolken.push(wolke);
+        }
+    }
 
+    aktualisiereWolken() {
+        for (let wolke of this.wolken) {
+            wolke.aktualisieren();
+        }
+    }
+    
+    darstellen() {
+        for (let wolke of this.wolken) {
+            wolke.darstellen();
+        }
+
+        einhornDarstellen();
+
+        document.getElementById("punkte").innerText = Spielstand.punkte;
+    }
+}
+
+function sindÜbereinander(einhorn, wolke) {
     if ( wolke.links < einhorn.links ) { return false; }
     if ( wolke.links + wolke.breite > einhorn.links + einhorn.breite ) { return false; }
     
@@ -23,11 +48,19 @@ function sindÜbereinander(id1, id2) {
     return true;
 }
 
-function stelleSpielstandDar() {
-    einhornDarstellen();
-    wolkenDarstellen();
+function sammleWolkeFallsÜbereinander(wolke) {
+    if ( sindÜbereinander(Spielstand["einhorn"], wolke) ) {
+        spieleTon("kling");
+        wolke.platziereRechts();
+        Spielstand.punkte += 1;
 
-    document.getElementById("punkte").innerText = Spielstand.punkte;
+        if (Spielstand.einhorn.links < 200 && Spielstand.einhorn.geschwindigkeit < 0) {
+            Spielstand.einhorn.geschwindigkeit = Math.min(Spielstand.einhorn.geschwindigkeit + 0.7, 0.5);
+        } else if (Spielstand.einhorn.links > window.innerWidth - 200 && Spielstand.einhorn.geschwindigkeit > 0) {
+        } else {
+            Spielstand.einhorn.geschwindigkeit = Math.min(Spielstand.einhorn.geschwindigkeit + 0.3, 0.5);
+        }
+    }
 }
 
 function gameover() {
@@ -43,3 +76,6 @@ function spieleTon(welcherTon) {
 
     new Audio(tonDatei).play();
 }
+
+window.spiel = new Spiel();
+window.spiel.aufbauen();

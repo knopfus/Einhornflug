@@ -79,13 +79,13 @@ document.getElementById("neustart").onclick = function() { location.reload(); };
     Spielstand.einhorn.geschwindigkeit = Math.max(Spielstand.einhorn.geschwindigkeit - 0.0015, -0.5);
     Spielstand.einhorn.links += Spielstand.einhorn.geschwindigkeit;
 
-    aktualisiereWolken();
+    spiel.aktualisiereWolken();
 
 
     stelleSpielstandDar();
 
 
-    if (istLinksVerschwunden("einhorn")) {
+    if (istEinhornLinksVerschwunden()) {
         gameover();
     } else {
         wiederhole();

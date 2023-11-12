@@ -1,41 +1,34 @@
 
-function verschiebeNachLinks(id, anzahlPixel) {
-    Spielstand[id].links -= anzahlPixel;
-}
+class Wolke {
+    constructor(links, oben, breite, höhe, geschwindigkeit, id) {
+        this.links = links;
+        this.oben = oben;
+        this.breite = breite;
+        this.höhe = höhe;
+        this.geschwindigkeit = geschwindigkeit;
+        this.id = id;
+    }
 
-function istLinksVerschwunden(id) {
-    return Spielstand[id].links < -200;
-}
+    aktualisieren() {
+        this.links -= this.geschwindigkeit;
 
-function platziereRechts(id) {
-    var rechterRand = window.innerWidth,
-        untererRand = window.innerHeight;
-
-    Spielstand[id].links = rechterRand + 100;
-
-    console.log(untererRand);
-    var neueHöhe = Math.random() * untererRand;
-    console.log(neueHöhe);
-    Spielstand[id].oben = neueHöhe;
-}
-
-function aktualisiereWolken() {
-    for (let i = 1; i <= 5; i++) {
-        let id = "wolke" + i;
-
-        verschiebeNachLinks(id, i);
-        if ( istLinksVerschwunden(id) ) {
-            platziereRechts(id);
+        if (this.links < -200) {
+            this.platziereRechts();
         }
 
-        sammleWolkeFallsÜbereinander(id);
-    } 
-}
+        sammleWolkeFallsÜbereinander(this);
+    }
 
-function wolkenDarstellen() {
-    for (let i = 1; i <= 5; i++) {
-        let id = "wolke" + i;
-        document.getElementById(id).style.top = Spielstand["wolke" + i].oben + "px";
-        document.getElementById(id).style.left = Spielstand["wolke" + i].links + "px";
+    platziereRechts() {
+        var rechterRand = window.innerWidth,
+        untererRand = window.innerHeight;
+
+        this.links = rechterRand + 100;
+        this.oben = Math.random() * untererRand;
+    }
+
+    darstellen() {
+        document.getElementById(this.id).style.top = this.oben + "px";
+        document.getElementById(this.id).style.left = this.links + "px";
     }
 }
